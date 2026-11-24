@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Smart Attendance System · Phase 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F3F6FA;--surface:#FFFFFF;--ink:#0E1A33;--muted:#55627A;--line:#D5DDE9;--accent:#0A6C8C;--accent-ink:#FFFFFF;--ok:#13794B;--okbg:#DDF3E7;--bad:#B3261E;--badbg:#FBE4E2;--warn:#8A5A00;--warnbg:#FFF0CC;--hero:#0E1A33;--hero-ink:#F3F6FA;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0A1222;--surface:#131E36;--ink:#E8EEF8;--muted:#9AA8C2;--line:#27355A;--accent:#5CC3E4;--accent-ink:#06223A;--ok:#6FD9A2;--okbg:#10372A;--bad:#FF9A92;--badbg:#42191A;--warn:#F2C45A;--warnbg:#3D2E0A;--hero:#050B17;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0A1222;--surface:#131E36;--ink:#E8EEF8;--muted:#9AA8C2;--line:#27355A;--accent:#5CC3E4;--accent-ink:#06223A;--ok:#6FD9A2;--okbg:#10372A;--bad:#FF9A92;--badbg:#42191A;--warn:#F2C45A;--warnbg:#3D2E0A;--hero:#050B17;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.55;font-size:16px}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+header.top{background:var(--hero);color:var(--hero-ink)}
+nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 0;flex-wrap:wrap}
+nav b{font-weight:900;letter-spacing:-.01em;font-size:18px}
+nav div{display:flex;gap:18px;flex-wrap:wrap;font-size:14px}
+nav a{text-decoration:none;opacity:.85}nav a:hover{opacity:1;text-decoration:underline}
+.hero{padding:44px 0 56px;max-width:760px}
+.hero h1{font-size:clamp(38px,7vw,68px);line-height:1;letter-spacing:-.035em;font-weight:900;margin:0 0 18px}
+.hero p{font-size:18px;max-width:58ch;margin:0 0 24px;opacity:.88}
+.btn{display:inline-block;background:var(--accent);color:var(--accent-ink);border:0;border-radius:8px;padding:11px 18px;font:700 15px inherit;font-family:inherit;cursor:pointer;text-decoration:none}
+.btn.ghost{background:transparent;color:inherit;border:1.5px solid currentColor}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+section{padding:56px 0 8px}
+h2{font-size:clamp(26px,4vw,36px);letter-spacing:-.025em;line-height:1.1;margin:0 0 10px;font-weight:900}
+.lede{color:var(--muted);max-width:62ch;margin:0 0 26px}
+.grid{display:grid;gap:20px;grid-template-columns:1.25fr 1fr}
+@media(max-width:860px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px}
+.panel h3{margin:0 0 12px;font-size:17px}
+label{display:block;font-size:13px;font-weight:700;margin-bottom:5px;color:var(--muted)}
+input,select{width:100%;font:inherit;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.row{display:grid;grid-template-columns:1.4fr 1fr;gap:12px;margin-bottom:12px}
+@media(max-width:520px){.row{grid-template-columns:1fr}}
+.acts{display:flex;gap:10px;flex-wrap:wrap}
+.msg{margin-top:14px;padding:12px 14px;border-radius:8px;font-size:15px;min-height:46px;background:var(--bg);color:var(--muted)}
+.msg.ok{background:var(--okbg);color:var(--ok)}.msg.bad{background:var(--badbg);color:var(--bad)}.msg.warn{background:var(--warnbg);color:var(--warn)}
+.msg b{font-weight:700}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14.5px}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:13px;color:var(--muted);font-weight:700}
+td.usn{font-variant-numeric:tabular-nums}
+button.link{background:none;border:0;padding:0;font:inherit;color:var(--accent);cursor:pointer;text-decoration:underline}
+.tag{display:inline-block;padding:2px 9px;border-radius:99px;font-size:13px;font-weight:700}
+.tag.Present{background:var(--okbg);color:var(--ok)}.tag.Absent{background:var(--badbg);color:var(--bad)}.tag.Excused{background:var(--warnbg);color:var(--warn)}.tag.none{color:var(--muted)}
+.bar{height:8px;border-radius:99px;background:var(--line);min-width:70px;overflow:hidden}.bar i{display:block;height:100%;background:var(--accent)}
+.queue{display:flex;gap:8px;flex-wrap:wrap;min-height:40px;margin:6px 0 14px;align-items:center}
+.chip{border:1.5px solid var(--accent);border-radius:8px;padding:5px 10px;font-size:13.5px;font-weight:500}
+.chip:first-child{background:var(--accent);color:var(--accent-ink)}
+.empty{color:var(--muted);font-size:14px}
+ul.log{list-style:none;margin:0;padding:0;max-height:210px;overflow:auto;font-size:14px}
+ul.log li{padding:7px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px}
+.stats{display:flex;gap:22px;flex-wrap:wrap;margin-bottom:14px}
+.stats div{font-size:13px;color:var(--muted)}.stats strong{display:block;font-size:26px;color:var(--ink);letter-spacing:-.02em}
+.cards{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.cards .panel p{margin:0;color:var(--muted);font-size:15px}
+.cards .panel code,.mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;background:var(--bg);padding:1px 6px;border-radius:5px}
+.flow{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch}
+.flow div{flex:1 1 140px;border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:12px;font-size:14px}
+.flow div b{display:block;margin-bottom:2px}
+.gantt td,.gantt th{text-align:center;padding:8px 4px}.gantt td:first-child,.gantt th:first-child{text-align:left;padding-left:0}
+.on{background:var(--accent);border-radius:5px;display:block;height:18px}
+footer{margin-top:64px;background:var(--hero);color:var(--hero-ink);padding:32px 0 40px;font-size:14px}
+footer p{margin:4px 0;opacity:.85}
+.tbtn{background:none;border:1.5px solid currentColor;color:inherit;border-radius:8px;padding:5px 10px;font:inherit;font-size:13px;cursor:pointer}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header class="top">
+<div class="wrap">
+<nav>
+<b>Smart Attendance</b>
+<div><a href="#demo">Try it</a><a href="#structures">Data structures</a><a href="#flow">How it works</a><a href="#report">Report</a><a href="#plan">Roadmap</a><a href="#team">Team</a><button class="tbtn" id="theme" type="button">Switch theme</button></div>
+</nav>
+<div class="hero">
+<h1>Attendance that takes seconds, not class time.</h1>
+<p>A web platform for recording, managing and analysing student attendance. Look up a student by USN, mark a session, block duplicates and see percentages instantly.</p>
+<a class="btn" href="#demo">Take attendance</a>
+</div>
+</div>
+</header>
+
+<main class="wrap">
+<section id="demo">
+<h2>Take attendance</h2>
+<p class="lede">A working prototype of the teacher workflow. The records below are fictional sample data for the Data Structures, ISE-D session. Your entries stay in this browser only.</p>
+<div class="grid">
+<div class="panel">
+<h3>Session: Data Structures · ISE-D · <span id="date"></span></h3>
+<div class="row">
+<div><label for="usn">Student USN</label><input id="usn" autocomplete="off" placeholder="e.g. NB25ISE241" maxlength="12"></div>
+<div><label for="status">Status</label><select id="status"><option>Present</option><option>Absent</option><option>Excused</option></select></div>
+</div>
+<div class="acts">
+<button class="btn" id="mark" type="button">Mark now</button>
+<button class="btn ghost" id="enq" type="button" style="color:var(--accent)">Add to check-in queue</button>
+</div>
+<div class="msg" id="msg" role="status" aria-live="polite">Enter a USN to begin.</div>
+</div>
+<div class="panel">
+<h3>Check-in queue (first in, first out)</h3>
+<div class="queue" id="queue"></div>
+<div class="acts"><button class="btn" id="next" type="button">Process next</button><button class="btn ghost" id="all" type="button" style="color:var(--accent)">Process all</button></div>
+<h3 style="margin-top:20px">Today’s log</h3>
+<ul class="log" id="log"></ul>
+</div>
+</div>
+
+<div class="panel" style="margin-top:20px">
+<div class="stats">
+<div><strong id="sP">0</strong>Present today</div>
+<div><strong id="sA">0</strong>Absent today</div>
+<div><strong id="sE">0</strong>Excused today</div>
+<div><strong id="sN">4</strong>Not yet marked</div>
+</div>
+<div class="tw"><table>
+<thead><tr><th>USN</th><th>Student</th><th>Today</th><th>Attended</th><th>Percentage</th></tr></thead>
+<tbody id="rows"></tbody></table></div>
+<div class="acts" style="margin-top:14px"><button class="btn ghost" id="csv" type="button" style="color:var(--accent)">Export CSV</button><button class="btn ghost" id="reset" type="button" style="color:var(--accent)">Reset session</button></div>
+</div>
+</section>
+
+<section id="structures">
+<h2>Data structures behind it</h2>
+<p class="lede">Each part of the workflow uses the structure that suits it best. The demo above runs on real implementations of the first three.</p>
+<div class="cards">
+<div class="panel"><h3>Hash table</h3><p>Maps a USN to a student record, so lookup takes O(1) on average. The result message above shows which bucket was checked.</p></div>
+<div class="panel"><h3>Queue</h3><p>Check-in requests are processed in arrival order (FIFO). The queue is temporary; the log is the record.</p></div>
+<div class="panel"><h3>List</h3><p>Attendance entries are kept in order and traversed to build the log and the percentage report in O(n).</p></div>
+<div class="panel"><h3>Tree</h3><p>Institute → department → semester → section → student, so classes can be grouped and traversed.</p></div>
+</div>
+</section>
+
+<section id="flow">
+<h2>How a record is saved</h2>
+<p class="lede">Every entry passes the same checks before it is stored.</p>
+<div class="flow">
+<div><b>Sign in</b>Teacher is verified for their role.</div>
+<div><b>Pick session</b>Course, section and date.</div>
+<div><b>Find student</b>Hash lookup by USN.</div>
+<div><b>Check duplicate</b>One entry per student per session.</div>
+<div><b>Save</b>Status, timestamp and who marked it.</div>
+<div><b>Report</b>Totals and percentage update.</div>
+</div>
+<div class="cards" style="margin-top:20px">
+<div class="panel"><h3>Teachers</h3><p>Create sessions, mark attendance and review class reports.</p></div>
+<div class="panel"><h3>Students</h3><p>See only their own attendance history and percentage.</p></div>
+<div class="panel"><h3>Administrators</h3><p>Manage users, classes and settings, with an audit trail for corrections.</p></div>
+</div>
+<p class="lede" style="margin-top:20px">Planned stack: React.js frontend, Python Flask API, PostgreSQL with a unique constraint on <span class="mono">(session_id, student_id)</span>. Face verification is an optional later extension that would need consent and approval.</p>
+</section>
+
+<section id="report">
+<h2>Phase 1 project report</h2>
+<p class="lede">Data Structures (LA-2, CSE201) · Batch 5. A condensed version of the full report.</p>
+<div class="panel"><h3>Abstract</h3><p style="margin:0;color:var(--muted)">Most colleges still record attendance by roll call or paper sheets, which wastes teaching time, invites proxy attendance and leaves records to be retyped into spreadsheets. This project proposes a Smart Attendance System built around efficient data handling: a hash table for constant-time average lookup of student IDs, arrays for time-ordered attendance logs, and a web dashboard where teachers mark attendance, administrators see analytics, and alerts fire when a student drops below the required percentage.</p></div>
+<h3 style="margin:28px 0 0">Objectives and measures of success</h3><div class="panel tw" style="margin-top:16px"><table><thead><tr><th>No.</th><th>Objective</th><th>Measure of success</th></tr></thead><tbody><tr><td style="white-space:normal">O1</td><td style="white-space:normal">Verify a student ID using a hash table</td><td style="white-space:normal">O(1) average lookup; 1,000 lookups in well under a second</td></tr><tr><td style="white-space:normal">O2</td><td style="white-space:normal">Store daily attendance as time-ordered arrays</td><td style="white-space:normal">Every record has student, class, date and timestamp, in order</td></tr><tr><td style="white-space:normal">O3</td><td style="white-space:normal">Reduce time spent taking attendance</td><td style="white-space:normal">A class of 60 marked in under 1 minute</td></tr><tr><td style="white-space:normal">O4</td><td style="white-space:normal">Generate attendance percentage reports</td><td style="white-space:normal">Per-student and per-class reports with correct figures</td></tr><tr><td style="white-space:normal">O5</td><td style="white-space:normal">Alert on low attendance</td><td style="white-space:normal">Students below 75% flagged after each update</td></tr><tr><td style="white-space:normal">O6</td><td style="white-space:normal">Prevent duplicate marking</td><td style="white-space:normal">A student cannot be marked twice in one session</td></tr><tr><td style="white-space:normal">O7</td><td style="white-space:normal">Role-based access</td><td style="white-space:normal">Teachers, students and administrators see only what their role allows</td></tr></tbody></table></div><h3 style="margin:28px 0 0">How existing approaches compare</h3><div class="panel tw" style="margin-top:16px"><table><thead><tr><th>Approach</th><th>Strengths</th><th>Weaknesses</th></tr></thead><tbody><tr><td style="white-space:normal">Manual roll call or paper register</td><td style="white-space:normal">No cost, no technology</td><td style="white-space:normal">Slow, error-prone, easy to proxy, must be retyped</td></tr><tr><td style="white-space:normal">RFID or ID card</td><td style="white-space:normal">Fast, easy to automate</td><td style="white-space:normal">Cards can be handed to a friend; readers cost money</td></tr><tr><td style="white-space:normal">Biometric (fingerprint)</td><td style="white-space:normal">Hard to fake</td><td style="white-space:normal">Dedicated hardware, queues, hygiene concerns</td></tr><tr><td style="white-space:normal">Face recognition</td><td style="white-space:normal">Contactless, hard to proxy</td><td style="white-space:normal">Needs cameras, ML and careful privacy handling</td></tr><tr><td style="white-space:normal">QR code or app check-in</td><td style="white-space:normal">Cheap, quick, uses phones</td><td style="white-space:normal">Code can be shared remotely</td></tr><tr><td style="white-space:normal"><b>Smart Attendance System</b></td><td style="white-space:normal">Fast lookup, structured logs, real-time analytics, ID method can be swapped later</td><td style="white-space:normal">Initial version relies on a typed or scanned ID; biometrics are future work</td></tr></tbody></table></div><p class="lede" style="margin-top:16px">The gap: most systems focus on <em>how</em> a student is identified, and far fewer on what happens to the data afterwards. This project is software-first and identification-method-agnostic, so it works with a typed ID, a scanned card number or a QR payload.</p><h3 style="margin:28px 0 0">Complexity summary</h3><div class="panel tw" style="margin-top:16px"><table><thead><tr><th>Operation</th><th>Structure</th><th>Average</th><th>Worst case</th></tr></thead><tbody><tr><td style="white-space:normal">Verify student ID</td><td style="white-space:normal">Hash table</td><td style="white-space:normal">O(1)</td><td style="white-space:normal">O(n) with many collisions</td></tr><tr><td style="white-space:normal">Register student</td><td style="white-space:normal">Hash table</td><td style="white-space:normal">O(1) amortised</td><td style="white-space:normal">O(n) during resize</td></tr><tr><td style="white-space:normal">Append attendance record</td><td style="white-space:normal">Array</td><td style="white-space:normal">O(1) amortised</td><td style="white-space:normal">O(n) on array growth</td></tr><tr><td style="white-space:normal">Check duplicate in a session</td><td style="white-space:normal">Hash set of IDs per session</td><td style="white-space:normal">O(1)</td><td style="white-space:normal">O(n)</td></tr><tr><td style="white-space:normal">Update percentage</td><td style="white-space:normal">Counter hash table</td><td style="white-space:normal">O(1)</td><td style="white-space:normal">O(n)</td></tr><tr><td style="white-space:normal">Class report</td><td style="white-space:normal">Scan of student list</td><td style="white-space:normal">O(n)</td><td style="white-space:normal">O(n)</td></tr></tbody></table></div><p class="lede" style="margin-top:16px">Collisions use separate chaining and the table doubles when the load factor passes about 0.75, which keeps chains short. A per-course counter table avoids rescanning every log whenever a percentage is needed.</p><h3 style="margin:28px 0 0">Planned API</h3><div class="panel tw" style="margin-top:16px"><table><thead><tr><th>Method</th><th>Endpoint</th><th>Purpose</th></tr></thead><tbody><tr><td style="white-space:normal">POST</td><td style="white-space:normal">/students</td><td style="white-space:normal">Register a student</td></tr><tr><td style="white-space:normal">GET</td><td style="white-space:normal">/students/{id}</td><td style="white-space:normal">Look up a student (hash table)</td></tr><tr><td style="white-space:normal">POST</td><td style="white-space:normal">/sessions</td><td style="white-space:normal">Open a class session</td></tr><tr><td style="white-space:normal">POST</td><td style="white-space:normal">/sessions/{id}/attendance</td><td style="white-space:normal">Mark attendance for a student ID</td></tr><tr><td style="white-space:normal">GET</td><td style="white-space:normal">/students/{id}/attendance</td><td style="white-space:normal">Student percentage per course</td></tr><tr><td style="white-space:normal">GET</td><td style="white-space:normal">/courses/{id}/report</td><td style="white-space:normal">Class report</td></tr><tr><td style="white-space:normal">GET</td><td style="white-space:normal">/alerts</td><td style="white-space:normal">Students below threshold</td></tr></tbody></table></div><p class="lede" style="margin-top:16px">Six entities: Student, Teacher, Course, Enrollment, Session and AttendanceRecord. Enrollment resolves the many-to-many link between students and courses; AttendanceRecord links students to sessions. Prototype storage is SQLite, moving to PostgreSQL if scaled.</p><h3 style="margin:28px 0 0">Initial test cases</h3><div class="panel tw" style="margin-top:16px"><table><thead><tr><th>ID</th><th>Test</th><th>Expected</th></tr></thead><tbody><tr><td style="white-space:normal">T1</td><td style="white-space:normal">Insert 100 students, look each up</td><td style="white-space:normal">All found</td></tr><tr><td style="white-space:normal">T2</td><td style="white-space:normal">Look up a missing ID</td><td style="white-space:normal">None returned</td></tr><tr><td style="white-space:normal">T3</td><td style="white-space:normal">Insert enough students to trigger a resize</td><td style="white-space:normal">All still found after resize</td></tr><tr><td style="white-space:normal">T4</td><td style="white-space:normal">Mark attendance twice</td><td style="white-space:normal">Second mark rejected</td></tr><tr><td style="white-space:normal">T5</td><td style="white-space:normal">Mark an unknown ID</td><td style="white-space:normal">Error, no record added</td></tr><tr><td style="white-space:normal">T6</td><td style="white-space:normal">Percentage with zero sessions held</td><td style="white-space:normal">No crash, shows 0 or not applicable</td></tr></tbody></table></div><h3 style="margin:28px 0 0">Risks and limitations</h3><div class="panel tw" style="margin-top:16px"><table><thead><tr><th>Risk</th><th>Mitigation</th></tr></thead><tbody><tr><td style="white-space:normal">A member is unavailable</td><td style="white-space:normal">Cross-train; keep tasks in the shared repository</td></tr><tr><td style="white-space:normal">Scope grows (face recognition)</td><td style="white-space:normal">Keep recognition as optional future work; finish the core first</td></tr><tr><td style="white-space:normal">Front end and back end do not integrate</td><td style="white-space:normal">Agree the API contract early; integrate weekly</td></tr><tr><td style="white-space:normal">Data loss</td><td style="white-space:normal">Commit often; back up the database file</td></tr><tr><td style="white-space:normal">Poor performance with large data</td><td style="white-space:normal">Use the hash table and counters; test with 10,000 records</td></tr></tbody></table></div><p class="lede" style="margin-top:16px">Attendance data is personal data. The system collects only what is needed, restricts access by role, stores passwords only as hashes, and would require explicit consent and a retention policy if face recognition or biometrics are added. The first version reduces, but does not eliminate, proxy attendance. Future scope: RFID or QR scanning, face recognition, mobile apps, parent notifications and at-risk analytics.</p>
+</section>
+
+<section id="plan">
+<h2>Phase 2 roadmap</h2>
+<p class="lede">A six-week plan, with the last week kept as a buffer for integration.</p>
+<div class="panel tw"><table class="gantt" id="gantt"></table></div>
+</section>
+
+<section id="team">
+<h2>Team 5</h2>
+<p class="lede">Nitte Meenakshi Institute of Technology · Information Science and Engineering · Semester III</p>
+<div class="cards">
+<div class="panel"><h3>Siddhanth Nayak</h3><p>NB25ISE223<br>Backend core, hash table, API</p></div>
+<div class="panel"><h3>Shobhith N</h3><p>NB25ISE213<br>Attendance logging and storage</p></div>
+<div class="panel"><h3>Suhas H Nayaka</h3><p>NB25ISE238<br>Frontend dashboards, UI wireframes</p></div>
+<div class="panel"><h3>Sumukh Gujjar</h3><p>NB25ISE241<br>Reports, alerts, testing, documentation</p></div>
+</div>
+</section>
+</main>
+
+<footer><div class="wrap"><p><b>Smart Attendance System</b> · Data Structures LA-2 · Phase 1 · Bengaluru, 2026–2027</p><p>Prototype for academic review. All attendance data shown is fictional.</p></div></footer>
+
+<script>
+(function(){
+var $=function(i){return document.getElementById(i)};
+// Hash table with chaining
+function HashTable(n){this.b=[];for(var i=0;i<n;i++)this.b.push([])}
+HashTable.prototype.h=function(k){var x=0;for(var i=0;i<k.length;i++)x=(x*31+k.charCodeAt(i))%this.b.length;return x};
+HashTable.prototype.set=function(k,v){this.b[this.h(k)].push([k,v])};
+HashTable.prototype.get=function(k){var i=this.h(k),p=0,c=this.b[i];for(var j=0;j<c.length;j++){p++;if(c[j][0]===k)return{v:c[j][1],i:i,p:p}}return{v:null,i:i,p:p}};
+var base=[
+{usn:"NB25ISE241",name:"Sumukh Gujjar",pres:17,tot:19},
+{usn:"NB25ISE223",name:"Siddhanth Nayak",pres:16,tot:19},
+{usn:"NB25ISE213",name:"Shobhith N",pres:15,tot:19},
+{usn:"NB25ISE238",name:"Suhas H Nayaka",pres:18,tot:19}];
+var ht=new HashTable(8);base.forEach(function(s){ht.set(s.usn,s)});
+var KEY="sas-log-v1",log=[],queue=[];
+try{var raw=localStorage.getItem(KEY);if(raw)log=JSON.parse(raw)||[]}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(log))}catch(e){}}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function say(t,c){var m=$("msg");m.className="msg "+(c||"");m.innerHTML=t}
+function today(){return new Date().toLocaleDateString("en-GB")}
+$("date").textContent=today();
+function find(u){return log.filter(function(r){return r.usn===u})[0]}
+function mark(usn,status,quiet){
+ usn=usn.trim().toUpperCase();
+ if(!usn){say("Enter a USN first.","warn");return{ok:false}}
+ var r=ht.get(usn);
+ if(!r.v){say("<b>Student not found.</b> "+esc(usn)+" is not registered. Check the USN and try again.","bad");return{ok:false}}
+ var info="Hash bucket "+r.i+", "+r.p+" comparison"+(r.p>1?"s":"");
+ if(find(usn)){say("<b>Duplicate entry.</b> "+esc(r.v.name)+" is already marked "+esc(find(usn).status)+" for this session. ("+info+")","warn");return{ok:false}}
+ log.push({usn:usn,status:status,time:new Date().toLocaleTimeString("en-GB")});save();
+ say("<b>Attendance saved.</b> "+esc(r.v.name)+" marked "+status+". ("+info+")","ok");
+ return{ok:true}}
+function render(){
+ var c={Present:0,Absent:0,Excused:0};
+ $("rows").innerHTML=base.map(function(s){
+  var e=find(s.usn),p=s.pres,t=s.tot;
+  if(e){c[e.status]++;if(e.status==="Present"){p++;t++}else if(e.status==="Absent")t++}
+  var pc=t?Math.round(p/t*1000)/10:0;
+  return'<tr><td class="usn"><button class="link" data-u="'+s.usn+'">'+s.usn+'</button></td><td>'+esc(s.name)+'</td><td>'+(e?'<span class="tag '+e.status+'">'+e.status+'</span>':'<span class="tag none">Not marked</span>')+'</td><td>'+p+' / '+t+'</td><td><div style="display:flex;align-items:center;gap:8px"><div class="bar" aria-hidden="true"><i style="width:'+pc+'%"></i></div>'+pc+'%</div></td></tr>'}).join("");
+ $("sP").textContent=c.Present;$("sA").textContent=c.Absent;$("sE").textContent=c.Excused;$("sN").textContent=base.length-log.length;
+ $("queue").innerHTML=queue.length?queue.map(function(q,i){return'<span class="chip">'+(i===0?"Next: ":"")+q.usn+" · "+q.status+"</span>"}).join(""):'<span class="empty">Queue is empty.</span>';
+ $("next").disabled=$("all").disabled=!queue.length;
+ $("log").innerHTML=log.length?log.slice().reverse().map(function(r){var s=ht.get(r.usn).v;return"<li><span>"+esc(s.name)+" · "+r.status+"</span><span>"+r.time+"</span></li>"}).join(""):'<li class="empty">No entries yet.</li>'}
+$("mark").onclick=function(){if(mark($("usn").value,$("status").value).ok)$("usn").value="";render()};
+$("usn").addEventListener("keydown",function(e){if(e.key==="Enter")$("mark").click()});
+$("enq").onclick=function(){
+ var u=$("usn").value.trim().toUpperCase();
+ if(!u){say("Enter a USN first.","warn");return}
+ if(!ht.get(u).v){say("<b>Student not found.</b> "+esc(u)+" is not registered.","bad");return}
+ queue.push({usn:u,status:$("status").value});$("usn").value="";
+ say("<b>Queued.</b> "+esc(u)+" is waiting at position "+queue.length+".","ok");render()};
+$("next").onclick=function(){if(queue.length){var q=queue.shift();mark(q.usn,q.status);render()}};
+$("all").onclick=function(){var n=0,d=0;while(queue.length){var q=queue.shift();mark(q.usn,q.status).ok?n++:d++}
+ say("<b>Queue processed.</b> "+n+" saved, "+d+" rejected as duplicates.",d?"warn":"ok");render()};
+$("rows").addEventListener("click",function(e){var u=e.target.getAttribute("data-u");if(u){$("usn").value=u;$("usn").focus()}});
+$("reset").onclick=function(){log=[];queue=[];save();say("Session reset. Enter a USN to begin.");render()};
+$("csv").onclick=function(){
+ var lines=["USN,Name,Status,Time"];log.forEach(function(r){lines.push([r.usn,ht.get(r.usn).v.name,r.status,r.time].join(","))});
+ if(!log.length){say("Nothing to export yet. Mark at least one student.","warn");return}
+ var a=document.createElement("a");a.href="data:text/csv;charset=utf-8,"+encodeURIComponent(lines.join("\n"));a.download="attendance-"+today().replace(/\//g,"-")+".csv";document.body.appendChild(a);a.click();a.remove()};
+// Gantt
+var wp=[["Confirm requirements and UI",[1,2]],["Database and backend APIs",[2,3]],["Hash lookup and queue module",[2,3]],["Frontend attendance workflow",[3,4]],["Reports and integration",[4,5]],["Testing and bug fixing",[5,6]],["Documentation and final demo",[6]]];
+var g="<thead><tr><th>Work package</th>";for(var w=1;w<=6;w++)g+="<th>W"+w+"</th>";g+="</tr></thead><tbody>";
+wp.forEach(function(r){g+="<tr><td>"+r[0]+"</td>";for(var w=1;w<=6;w++)g+="<td>"+(r[1].indexOf(w)>-1?'<span class="on" title="Week '+w+'"></span>':"")+"</td>";g+="</tr>"});
+$("gantt").innerHTML=g+"</tbody>";
+// Theme
+$("theme").onclick=function(){var d=document.documentElement,dark=d.getAttribute("data-theme")==="dark"||(!d.getAttribute("data-theme")&&matchMedia("(prefers-color-scheme: dark)").matches);d.setAttribute("data-theme",dark?"light":"dark")};
+render();
+})();
+</script>
+</body>
+</html>
